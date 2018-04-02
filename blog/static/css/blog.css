@@ -4,7 +4,7 @@ h1 a {
 }
 
 body {
-    padding-left: 15px;
+    padding-left: 20px;
 }
 
 .page-header {
@@ -23,7 +23,7 @@ body {
     margin-left: 40px;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5 {
     font-family: 'Lobster', cursive;
 }
 

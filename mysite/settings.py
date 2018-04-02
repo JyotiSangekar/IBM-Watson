@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog'
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -72,28 +72,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-# DATABASES = {
-# 'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd2ltkhvv71saol',
-        'USER': 'oqfdfetpezahnr',
-        'PASSWORD': 'fb95b8619c11ea22f983a5e19d4c00ab196a861053df79525f2f6b63ddc732e7',
-        'HOST': 'postgres://oqfdfetpezahnr:fb95b8619c11ea22f983a5e19d4c00ab196a861053df79525f2f6b63ddc732e7@ec2-54-235-220-220.compute-1.amazonaws.com:5432/d2ltkhvv71saol',
+        'NAME': 'd3vh21lm0pl673',
+        'USER': 'lpwzwseivphdyk',
+        'PASSWORD': '3d1a7822bd73fbb078405ad69d4400affa118b594c00ba5de33598ce3b55e947',
+        'HOST': 'ec2-107-20-151-189.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
-
-
 
 
 # Password validation
@@ -138,17 +126,14 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'),
+                    )
+
 
 # Update database configuration with $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 DATABASES['default'] = dj_database_url.config()
-
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 

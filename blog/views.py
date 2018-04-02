@@ -1,20 +1,57 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from .models import Post
-from django.shortcuts import render, get_object_or_404
 from .forms import PostForm
 from django.shortcuts import redirect
+import json
+from watson_developer_cloud import ToneAnalyzerV3
+from watson_developer_cloud import LanguageTranslatorV2 as LanguageTranslator
 
-# Create your views here.
+
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+    tone_analyzer = ToneAnalyzerV3(
+        username='60c515f9-9962-4d2f-9e11-0bbd0f577ec0',
+        password='LWvrDl2DnUnU',
+        version='2016-05-19')
+
+    language_translator = LanguageTranslator(
+        username='e653c27a-b9cf-4aa3-8169-ca97b7d51802',
+        password='MEUUAzi2nSKc')
+
+    for post in posts:
+        posting = post.text
+        toneObj= json.dumps(tone_analyzer.tone(tone_input=posting, content_type='text/plain'), indent=2)
+        post.toneObj2 = json.loads(toneObj)
+        post.angerScore = post.toneObj2['document_tone']['tone_categories'][0]['tones'][0]['score']
+        post.disgustScore = post.toneObj2['document_tone']['tone_categories'][0]['tones'][1]['score']
+        post.fearScore = post.toneObj2['document_tone']['tone_categories'][0]['tones'][2]['score']
+        post.joyScore = post.toneObj2['document_tone']['tone_categories'][0]['tones'][3]['score']
+        post.sadScore = post.toneObj2['document_tone']['tone_categories'][0]['tones'][4]['score']
+
+        translation = language_translator.translate(
+            text=post.text,
+            # model_id='en-es'
+            source='en',
+            target='es'
+        )
+
+        obj = json.dumps(translation, indent=2, ensure_ascii=False)
+        post.obj2 = json.loads(obj)
+        json_data = post.obj2
+        post.trns = json_data["translations"][0]["translation"]
+        post.wordcount = json_data["word_count"]
+        post.charcount = json_data["character_count"]
+
     return render(request, 'blog/post_list.html', {'posts': posts})
+
+
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    # Post.objects.get(pk=pk)
     return render(request, 'blog/post_detail.html', {'post': post})
-def post_new(request):
-    form = PostForm()
-    return render(request, 'blog/post_edit.html', {'form': form})
+
+
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -27,6 +64,8 @@ def post_new(request):
     else:
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
+
+
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
@@ -40,3 +79,4 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
